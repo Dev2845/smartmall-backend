@@ -82,7 +82,7 @@ await reduceStock(orderItems, session);  await validateStock(cart.items);
 
         }
 
-        const discount = 0;
+    const discount = cart.discount || 0;
 
         const deliveryCharge = subtotal >= 500 ? 0 : 50;
 

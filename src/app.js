@@ -13,6 +13,9 @@ const addressRoutes = require("./routes/addressRoutes");
 const orderRoutes = require("./routes/orderRoutes");
 const paymentRoutes = require("./routes/paymentRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
+const couponRoutes=require("./routes/couponRoutes");
+const reviewRoutes=require("./routes/reviewRoutes");
+
 
 const app = express();
 
@@ -41,6 +44,9 @@ app.use("/api/address", addressRoutes);
 app.use("/api/order", orderRoutes);
 app.use("/api/payment", paymentRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/coupon",couponRoutes);
+app.use("/api/review",reviewRoutes);
+
 app.use(errorHandler);
 
 module.exports = app;

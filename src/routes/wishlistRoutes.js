@@ -1,6 +1,9 @@
 const express = require("express");
 
 const router = express.Router();
+const {
+    getWishlist
+} = require("../controllers/wishlistController");
 
 const {
   addToWishlist
@@ -15,5 +18,6 @@ router.post(
   verifyToken,
   addToWishlist
 );
+router.get("/", verifyToken, getWishlist);
 
 module.exports = router;

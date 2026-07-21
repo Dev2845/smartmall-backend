@@ -56,3 +56,11 @@ exports.addToWishlist = async (req, res) => {
 
   }
 };
+exports.getWishlist = async (req, res) => {
+
+    res.json({
+        success: true,
+        message: "Wishlist API Working"
+    });
+
+};

@@ -211,7 +211,7 @@ exports.getProductById = async (req, res) => {
 
     const product = await Product.findById(req.params.id)
       .populate("category", "name")
-      .populate("subCategory", "name");
+      .populate("subcategory", "name");
 
     if (!product || product.isDeleted) {
       return res.status(404).json({

@@ -496,11 +496,11 @@ exports.resetPassword = async (req, res) => {
 };
 
 exports.getAllUsers = async (req, res) => {
-
   try {
 
- const users = await User.find().select("-password");
-    res.status(200).json({
+    const users = await User.find().select("-password");
+
+    res.json({
       success: true,
       users
     });
@@ -513,7 +513,6 @@ exports.getAllUsers = async (req, res) => {
     });
 
   }
-
 };
 
 exports.getUserById = async (req, res) => {

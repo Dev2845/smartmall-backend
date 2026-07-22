@@ -6,16 +6,25 @@ const slugify = require("slugify");
 exports.createProduct = async (req, res) => {
   try {
 
-    const {name, description,category,subCategory,brand,price,discountPrice,stock,weight, featured} = req.body;
+    console.log("BODY :", req.body);
+    console.log("FILES :", req.files);
+    console.log("USER :", req.user);
+
+    const {
+      name,
+      description,
+      category,
+      subCategory,
+      brand,
+      price,
+      discountPrice,
+      stock,
+      weight,
+      featured
+    } = req.body;
 
     // Validation
-    if (
-      !name ||
-      !category ||
-      !subCategory ||
-      !price ||
-      stock === undefined
-    ) {
+    if (!name || !category || !subCategory || !price || stock === undefined) {
       return res.status(400).json({
         success: false,
         message: "Please fill all required fields"
@@ -42,10 +51,8 @@ exports.createProduct = async (req, res) => {
       });
     }
 
-    // Check Relation
-    if (
-      subCategoryExists.category.toString() !== category.toString()
-    ) {
+    // Category Relation Check
+    if (subCategoryExists.category.toString() !== category.toString()) {
       return res.status(400).json({
         success: false,
         message: "SubCategory does not belong to selected Category"
@@ -53,11 +60,9 @@ exports.createProduct = async (req, res) => {
     }
 
     // Images
-    const images = req.files
-      ? req.files.map(file => file.path)
-      : [];
+    const images = req.files ? req.files.map(file => file.path) : [];
 
-    // SKU Generate
+    // SKU
     const sku = "SM-" + Date.now();
 
     const product = await Product.create({
@@ -76,10 +81,11 @@ exports.createProduct = async (req, res) => {
       discountPrice,
       stock,
       weight,
+      featured,
       createdBy: req.user.id
     });
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       message: "Product Created Successfully",
       product
@@ -87,7 +93,9 @@ exports.createProduct = async (req, res) => {
 
   } catch (error) {
 
-    res.status(500).json({
+    console.error(error);
+
+    return res.status(500).json({
       success: false,
       message: error.message
     });

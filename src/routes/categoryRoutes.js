@@ -45,6 +45,7 @@ router.put(
     "/:id",
     verifyToken,
     isAdmin,
+    upload.single("image"),
     updateCategory
 );
 

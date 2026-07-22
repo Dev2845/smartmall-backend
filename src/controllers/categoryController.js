@@ -112,7 +112,6 @@ exports.getCategoryById = async (req, res) => {
 
 // update 
 exports.updateCategory = async (req, res) => {
-
     try {
 
         const { name, description } = req.body;
@@ -120,50 +119,43 @@ exports.updateCategory = async (req, res) => {
         const category = await Category.findById(req.params.id);
 
         if (!category) {
-
             return res.status(404).json({
-
                 success: false,
-
                 message: "Category not found"
-
             });
-
         }
 
         category.name = name || category.name;
-
         category.description = description || category.description;
+        category.slug = slugify(category.name, {
+            lower: true,
+            strict: true
+        });
 
-        category.slug = slugify(category.name, { lower: true });
+        // Image Update (Optional)
+        if (req.file) {
+            category.image = req.file.path;
+        }
 
         await category.save();
 
         res.status(200).json({
-
             success: true,
-
-            message: "Category Updated",
-
+            message: "Category Updated Successfully",
             category
-
         });
 
-    }
+    } catch (error) {
 
-    catch (error) {
+        console.log(error); // <-- Important
 
         res.status(500).json({
-
             success: false,
-
             message: error.message
-
         });
 
     }
-
-}
+};
 
 exports.deleteCategory = async (req, res) => {
 

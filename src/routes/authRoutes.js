@@ -7,7 +7,9 @@ const {
   getProfile,
   updateProfile,
   changePassword,
-  logout,forgotPassword,verifyOTP,resetPassword, getAllUsers
+  logout,forgotPassword,verifyOTP,resetPassword, getAllUsers,getUserById,
+  toggleUserStatus,
+  deleteUser
 } = require("../controllers/authController");
 
 const {
@@ -63,5 +65,29 @@ router.get(
     isAdmin,
     getAllUsers
 );
+
+
+
+router.get(
+    "/users/:id",
+    verifyToken,
+    isAdmin,
+    getUserById
+);
+
+router.patch(
+    "/users/block/:id",
+    verifyToken,
+    isAdmin,
+    toggleUserStatus
+);
+
+router.delete(
+    "/users/:id",
+    verifyToken,
+    isAdmin,
+    deleteUser
+);
+
 
 module.exports = router;

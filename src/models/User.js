@@ -48,16 +48,20 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
 
-    otp:{
-    type:String,
-    default:null
-},
+    otp: {
+      type: String,
+      default: null
+    },
 
-otpExpire:{
-    type:Date,
-    default:null
-}
+    otpExpire: {
+      type: Date,
+      default: null
+    }
 
   },
   {

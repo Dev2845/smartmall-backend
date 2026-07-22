@@ -6,94 +6,94 @@ const sendEmail = require("../utils/sendEmail");
 
 exports.registerUser = async (req, res) => {
 
-    try {
+  try {
 
-        const {
-            name,
-            email,
-            password,
-            phone
-        } = req.body;
+    const {
+      name,
+      email,
+      password,
+      phone
+    } = req.body;
 
-        if (!name || !email || !password) {
+    if (!name || !email || !password) {
 
-            return res.status(400).json({
+      return res.status(400).json({
 
-                success: false,
-                message: "All fields are required"
+        success: false,
+        message: "All fields are required"
 
-            });
-
-        }
-
-        const emailExists = await User.findOne({
-
-            email
-
-        });
-
-        if (emailExists) {
-
-            return res.status(400).json({
-
-                success: false,
-                message: "Email already exists"
-
-            });
-
-        }
-
-        const hashPassword = await bcrypt.hash(password,10);
-
-        const user = await User.create({
-
-            name,
-
-            email,
-
-            password: hashPassword,
-
-            phone
-
-        });
-
-        const token = generateToken(user);
-
-        res.status(201).json({
-
-            success:true,
-
-            message:"Registration Successful",
-
-            token,
-
-            user:{
-
-                id:user._id,
-
-                name:user.name,
-
-                email:user.email,
-
-                role:user.role
-
-            }
-
-        });
+      });
 
     }
 
-    catch(error){
+    const emailExists = await User.findOne({
 
-        res.status(500).json({
+      email
 
-            success:false,
+    });
 
-            message:error.message
+    if (emailExists) {
 
-        });
+      return res.status(400).json({
+
+        success: false,
+        message: "Email already exists"
+
+      });
 
     }
+
+    const hashPassword = await bcrypt.hash(password, 10);
+
+    const user = await User.create({
+
+      name,
+
+      email,
+
+      password: hashPassword,
+
+      phone
+
+    });
+
+    const token = generateToken(user);
+
+    res.status(201).json({
+
+      success: true,
+
+      message: "Registration Successful",
+
+      token,
+
+      user: {
+
+        id: user._id,
+
+        name: user.name,
+
+        email: user.email,
+
+        role: user.role
+
+      }
+
+    });
+
+  }
+
+  catch (error) {
+
+    res.status(500).json({
+
+      success: false,
+
+      message: error.message
+
+    });
+
+  }
 
 }
 
@@ -271,7 +271,7 @@ exports.changePassword = async (req, res) => {
 
     }
 
-    user.password = await bcrypt.hash(newPassword,10);
+    user.password = await bcrypt.hash(newPassword, 10);
 
     await user.save();
 
@@ -285,13 +285,13 @@ exports.changePassword = async (req, res) => {
 
   }
 
-  catch(error){
+  catch (error) {
 
     res.status(500).json({
 
-      success:false,
+      success: false,
 
-      message:error.message
+      message: error.message
 
     });
 
@@ -299,15 +299,15 @@ exports.changePassword = async (req, res) => {
 
 };
 
-exports.logout = async (req,res)=>{
+exports.logout = async (req, res) => {
 
-    res.status(200).json({
+  res.status(200).json({
 
-        success:true,
+    success: true,
 
-        message:"Logout Successful"
+    message: "Logout Successful"
 
-    });
+  });
 
 }
 
@@ -497,22 +497,128 @@ exports.resetPassword = async (req, res) => {
 
 exports.getAllUsers = async (req, res) => {
 
-    try {
+  try {
 
-        const users = await User.find().select("-password");
+    const users = await User.find({
+      isDeleted: false
+    }).select("-password");
 
-        res.status(200).json({
-            success: true,
-            users
-        });
+    res.status(200).json({
+      success: true,
+      users
+    });
 
-    } catch (error) {
+  } catch (error) {
 
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+
+  }
+
+};
+
+exports.getUserById = async (req, res) => {
+
+  try {
+
+    const user = await User.findById(req.params.id).select("-password");
+
+    if (!user) {
+
+      return res.status(404).json({
+        success: false,
+        message: "User not found"
+      });
 
     }
+
+    res.status(200).json({
+      success: true,
+      user
+    });
+
+  } catch (error) {
+
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+
+  }
+
+};
+
+exports.toggleUserStatus = async (req, res) => {
+
+  try {
+
+    const user = await User.findById(req.params.id);
+
+    if (!user) {
+
+      return res.status(404).json({
+        success: false,
+        message: "User not found"
+      });
+
+    }
+
+    user.status = !user.status;
+
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: user.status
+        ? "User Unblocked Successfully"
+        : "User Blocked Successfully",
+      user
+    });
+
+  } catch (error) {
+
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+
+  }
+
+};
+
+exports.deleteUser = async (req, res) => {
+
+  try {
+
+    const user = await User.findById(req.params.id);
+
+    if (!user) {
+
+      return res.status(404).json({
+        success: false,
+        message: "User not found"
+      });
+
+    }
+
+    user.isDeleted = true;
+
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "User Deleted Successfully"
+    });
+
+  } catch (error) {
+
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+
+  }
 
 };

@@ -7,7 +7,7 @@ const {
   getProfile,
   updateProfile,
   changePassword,
-  logout,forgotPassword,verifyOTP,resetPassword
+  logout,forgotPassword,verifyOTP,resetPassword, getAllUsers
 } = require("../controllers/authController");
 
 const {
@@ -56,5 +56,12 @@ router.get("/admin/dashboard", verifyToken, isAdmin, (req, res) => {
     admin: req.user,
   });
 });
+
+router.get(
+    "/users",
+    verifyToken,
+    isAdmin,
+    getAllUsers
+);
 
 module.exports = router;

@@ -6,7 +6,7 @@ const slugify = require("slugify");
 exports.createProduct = async (req, res) => {
   try {
 
-    const {name, description,category,subCategory,brand,price,discountPrice,stock,weight} = req.body;
+    const {name, description,category,subCategory,brand,price,discountPrice,stock,weight, featured} = req.body;
 
     // Validation
     if (
@@ -145,9 +145,9 @@ exports.getAllProducts = async (req, res) => {
 
         }
 
-        if (subcategory) {
+        if (subCategory) {
 
-            filter.subcategory = subcategory;
+            filter.subCategory = subCategory;
 
         }
 
@@ -167,7 +167,7 @@ exports.getAllProducts = async (req, res) => {
 
             .populate("category", "name")
 
-            .populate("subcategory", "name")
+            .populate("subCategory", "name")
 
             .skip(skip)
 
@@ -211,7 +211,7 @@ exports.getProductById = async (req, res) => {
 
     const product = await Product.findById(req.params.id)
       .populate("category", "name")
-      .populate("subcategory", "name");
+      .populate("subCategory", "name");
 
     if (!product || product.isDeleted) {
       return res.status(404).json({

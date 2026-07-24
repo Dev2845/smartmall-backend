@@ -104,83 +104,79 @@ exports.createProduct = async (req, res) => {
 };
 
 exports.getAllProducts = async (req, res) => {
-    try {
+  try {
 
-        const page = Number(req.query.page) || 1;
-        const limit = Number(req.query.limit) || 10;
-        const skip = (page - 1) * limit;
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
 
-        const {
-            keyword,
-            category,
-            subCategory,
-            minPrice,
-            maxPrice
-        } = req.query;
+    const {
+      keyword,
+      category,
+      subCategory,
+      minPrice,
+      maxPrice
+    } = req.query;
 
-        let filter = {
-            isDeleted: false,
-            isActive: true
-        };
+    let filter = {
+      isDeleted: false,
+      isActive: true
+    };
 
-        // Search by product name
-        if (keyword) {
-            filter.name = {
-                $regex: keyword,
-                $options: "i"
-            };
-        }
-
-        // Filter by category
-        if (category) {
-            filter.category = category;
-        }
-
-        // Filter by subCategory
-        if (subCategory) {
-            filter.subCategory = subCategory;
-        }
-
-        // Filter by price
-        if (minPrice || maxPrice) {
-            filter.price = {};
-
-            if (minPrice) {
-                filter.price.$gte = Number(minPrice);
-            }
-
-            if (maxPrice) {
-                filter.price.$lte = Number(maxPrice);
-            }
-        }
-
-        const total = await Product.countDocuments(filter);
-
-        const products = await Product.find(filter)
-            .populate("category", "name")
-            .populate("subCategory", "name")
-            .sort({ createdAt: -1 })
-            .skip(skip)
-            .limit(limit);
-
-        return res.status(200).json({
-            success: true,
-            page,
-            totalPages: Math.ceil(total / limit),
-            totalProducts: total,
-            products
-        });
-
-    } catch (error) {
-
-        console.error("Get Products Error:", error);
-
-        return res.status(500).json({
-            success: false,
-            message: error.message
-        });
-
+    // Search by product name
+    if (keyword) {
+      filter.name = {
+        $regex: keyword,
+        $options: "i"
+      };
     }
+
+    // Filter by category
+    if (category) {
+      filter.category = category;
+    }
+
+    // Filter by subCategory
+    if (subCategory) {
+      filter.subCategory = subCategory;
+    }
+
+    // Filter by price
+    if (minPrice || maxPrice) {
+      filter.price = {};
+
+      if (minPrice) {
+        filter.price.$gte = Number(minPrice);
+      }
+
+      if (maxPrice) {
+        filter.price.$lte = Number(maxPrice);
+      }
+    }
+
+    const total = await Product.countDocuments(filter);
+
+    const products = await Product.find(filter)
+      .populate("category", "name")
+      .populate("subCategory", "name")
+      .sort({ createdAt: -1 });
+
+ return res.status(200).json({
+  success: true,
+  totalProducts: products.length,
+  products
+});
+
+  } catch (error) {
+
+    console.error("Get Products Error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: error.message
+    });
+
+  }
 };
 
 exports.getProductById = async (req, res) => {
@@ -573,93 +569,93 @@ exports.toggleBestSeller = async (req, res) => {
 };
 exports.softDeleteProduct = async (req, res) => {
 
-    try {
+  try {
 
-        const product = await Product.findById(req.params.id);
+    const product = await Product.findById(req.params.id);
 
-        if (!product) {
+    if (!product) {
 
-            return res.status(404).json({
+      return res.status(404).json({
 
-                success: false,
+        success: false,
 
-                message: "Product Not Found"
+        message: "Product Not Found"
 
-            });
-
-        }
-
-        product.isDeleted = true;
-
-        await product.save();
-
-        res.json({
-
-            success: true,
-
-            message: "Product Deleted Successfully"
-
-        });
+      });
 
     }
 
-    catch (error) {
+    product.isDeleted = true;
 
-        res.status(500).json({
+    await product.save();
 
-            success: false,
+    res.json({
 
-            message: error.message
+      success: true,
 
-        });
+      message: "Product Deleted Successfully"
 
-    }
+    });
+
+  }
+
+  catch (error) {
+
+    res.status(500).json({
+
+      success: false,
+
+      message: error.message
+
+    });
+
+  }
 
 };
 
 
 exports.restoreProduct = async (req, res) => {
 
-    try {
+  try {
 
-        const product = await Product.findById(req.params.id);
+    const product = await Product.findById(req.params.id);
 
-        if (!product) {
+    if (!product) {
 
-            return res.status(404).json({
+      return res.status(404).json({
 
-                success: false,
+        success: false,
 
-                message: "Product Not Found"
+        message: "Product Not Found"
 
-            });
-
-        }
-
-        product.isDeleted = false;
-
-        await product.save();
-
-        res.json({
-
-            success: true,
-
-            message: "Product Restored Successfully"
-
-        });
+      });
 
     }
 
-    catch (error) {
+    product.isDeleted = false;
 
-        res.status(500).json({
+    await product.save();
 
-            success: false,
+    res.json({
 
-            message: error.message
+      success: true,
 
-        });
+      message: "Product Restored Successfully"
 
-    }
+    });
+
+  }
+
+  catch (error) {
+
+    res.status(500).json({
+
+      success: false,
+
+      message: error.message
+
+    });
+
+  }
 
 };
